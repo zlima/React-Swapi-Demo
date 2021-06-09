@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQueries, useQuery } from 'react-query';
 import Box from '@material-ui/core/Box';
@@ -42,6 +42,13 @@ const Characters = ({ Chars, episodeID }) => {
   const isLoading = results.some((query) => query.isLoading);
   const charsArray = !isLoading ? results.map((chars) => chars.data) : [];
 
+  const filterChars = (arr) =>
+    arr?.results.filter((result) =>
+      result.films.includes(`http://swapi.dev/api/films/${episodeID}/`)
+    );
+
+  const filteredUsers = useMemo(() => filterChars(data), data);
+
   return (
     <Box pb={10}>
       <Box component="div" px={10} my={4} fontWeight="fontWeightBold" fontSize={26} color="white">
@@ -61,7 +68,7 @@ const Characters = ({ Chars, episodeID }) => {
       <Box component="div" px="10%" my={4}>
         <Table
           config={tableConfig}
-          data={data ? data.results : charsArray}
+          data={filteredUsers || charsArray}
           isLoading={isLoading || isLoadingSearch}
         />
       </Box>
